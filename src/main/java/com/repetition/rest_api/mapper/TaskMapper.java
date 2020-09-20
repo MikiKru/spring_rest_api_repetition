@@ -1,17 +1,24 @@
 package com.repetition.rest_api.mapper;
 
 import com.repetition.rest_api.model.Task;
+import com.repetition.rest_api.model.User;
 import com.repetition.rest_api.model.dto.CreateTaskDto;
 import com.repetition.rest_api.model.dto.TaskDto;
 import com.repetition.rest_api.model.dto.UpdateTaskDto;
 import com.repetition.rest_api.model.dto.UpdateUserDto;
+import com.repetition.rest_api.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class TaskMapper {
+    @Autowired
+    private UserRepository userRepository;
+
     public TaskDto toDto(Task task){
         return new TaskDto(
                 task.getId(),
@@ -30,7 +37,8 @@ public class TaskMapper {
         task.setTitle(createTaskDto.getTitle());
         task.setType(createTaskDto.getType());
         task.setStatus(createTaskDto.getStatus());
-        task.setUser(createTaskDto.getUser());
+        Optional<User> isUser = userRepository.findById(createTaskDto.getUserId());
+        isUser.ifPresent(task::setUser);
         return task;
     }
     public Task fromDto(UpdateTaskDto updateTaskDto){

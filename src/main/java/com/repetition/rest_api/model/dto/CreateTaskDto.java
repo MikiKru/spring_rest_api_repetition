@@ -12,5 +12,5 @@ public class CreateTaskDto {
     private String title;
     private Type type;
     private Status status;
-    private User user;
+    private long userId;
 }
