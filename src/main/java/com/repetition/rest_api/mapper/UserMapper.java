@@ -17,7 +17,8 @@ public class UserMapper {
     }
     // mapowanie listy obiektów klasy User na listę obiektów DTO
    public List<UserDto> toDtos(List<User> users){
-        return users.stream().map(user -> toDto(user)).collect(Collectors.toList());
+        return users.stream().map(user -> toDto(user))
+                .collect(Collectors.toList());
    }
    // mapowanie obiektu CreateUserDto na obiekt User
    public User fromDto(CreateUserDto createUserDto){    // przy tworzeniu podajemy name
