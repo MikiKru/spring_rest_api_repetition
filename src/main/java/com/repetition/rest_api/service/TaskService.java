@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -18,22 +20,50 @@ public class TaskService {
     private TaskRepository taskRepository;
     @Autowired
     private UserRepository userRepository;
-    public Task createTask(Task task){
+
+    public Task createTask(Task task) {
         return taskRepository.save(task);
     }
-    public List<Task> getTasks(){
+
+    public List<Task> getTasks() {
         return taskRepository.findAll();
     }
-    public Task getTask(long taskId){
+
+    public Task getTask(long taskId) {
         return taskRepository.findById(taskId)
-                .orElseGet(() -> new Task(0,null,null,null,null,null));
+                .orElseGet(() -> new Task(0, null, null, null, null, null));
     }
-    public List<Task> getTasksByTypeAndStatusAndUser(Type type, Status status, long userId){
+
+    public List<Task> getTasksByTypeAndStatusAndUser(Type type, Status status, long userId) {
         Optional<User> isUser = userRepository.findById(userId);
-        if(isUser.isPresent()) {
+        if (isUser.isPresent()) {
             return taskRepository.findAllByUserAndStatusAndType(isUser.get(), status, type);
         }
         return taskRepository.findAllByUserAndStatusAndType(null, status, type);
     }
 
+    public void updateTask(Task task) {
+        if (taskRepository.findById(task.getId()).isPresent()) {
+            taskRepository.save(task);
+        }
+    }
+
+    public void updateTaskOwner(long taskId, long userId) {
+        Optional<Task> isTask = taskRepository.findById(taskId);
+        Optional<User> isUser = userRepository.findById(userId);
+        if (isTask.isPresent() && isUser.isPresent()) {
+            Task task = isTask.get();
+            task.setUser(isUser.get());
+            taskRepository.save(task);
+        }
+    }
+
+    public void deleteTask(long id) {
+        if (taskRepository.findById(id).isPresent()) {
+            taskRepository.deleteById(id);
+        }
+    }
+    public Map<Status, List<Task>> groupTasksByStatus(){
+        return getTasks().stream().collect(Collectors.groupingBy(Task::getStatus));
+    }
 }
