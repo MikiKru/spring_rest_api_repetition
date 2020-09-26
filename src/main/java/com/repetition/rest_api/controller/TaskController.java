@@ -4,12 +4,11 @@ import com.repetition.rest_api.mapper.TaskMapper;
 import com.repetition.rest_api.model.Task;
 import com.repetition.rest_api.model.dto.CreateTaskDto;
 import com.repetition.rest_api.model.dto.TaskDto;
+import com.repetition.rest_api.model.enums.Status;
+import com.repetition.rest_api.model.enums.Type;
 import com.repetition.rest_api.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,5 +30,16 @@ public class TaskController {
     public void createTask(CreateTaskDto createTaskDto){
         taskService.createTask(taskMapper.fromDto(createTaskDto));
     }
+
+    @GetMapping("/tasksWithFilter")
+    public List<TaskDto> getTasksByTypeAndStatusAndUser(
+            @RequestParam Status status,
+            @RequestParam Type type,
+            @RequestParam long userId){
+        return taskMapper.toDtos(taskService.getTasksByTypeAndStatusAndUser(type,status,userId));
+    }
+    // 1. edycja zadania: title, status, type
+    // 2. zmiana właściciela zadania
+    // 3. usowanie zadania po id
 
 }
